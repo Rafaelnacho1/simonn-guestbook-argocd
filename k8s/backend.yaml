@@ -16,7 +16,7 @@ kind: Deployment
 metadata:
   name: simon-postgres
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: simon-postgres
