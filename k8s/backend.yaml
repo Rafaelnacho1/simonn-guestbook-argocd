@@ -150,7 +150,7 @@ kind: Deployment
 metadata:
   name: simon-backend
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: simon-guestbook
