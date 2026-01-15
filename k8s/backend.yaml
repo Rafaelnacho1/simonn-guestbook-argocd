@@ -19,18 +19,19 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: simon-postgres
+      app: simon-guestbook
+      component: postgres
   template:
     metadata:
       labels:
-        app: simon-postgres
+        app: simon-guestbook
+        component: postgres
     spec:
       containers:
-        - name: simon-postgres
+        - name: postgres
           image: quay.io/fedora/postgresql-16:latest
           ports:
             - containerPort: 5432
-         
           resources:
             requests:
               cpu: 100m
@@ -38,7 +39,6 @@ spec:
             limits:
               cpu: 100m
               memory: 512Mi
-          
           env:
             - name: POSTGRESQL_USER
               valueFrom:
@@ -70,11 +70,12 @@ metadata:
 spec:
   type: ClusterIP
   selector:
-    app: simon-postgres
+    app: simon-guestbook
+    component: postgres
   ports:
     - port: 5432
+      targetPort: 5432
 ---
-# Redis
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -95,18 +96,19 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: simon-redis
+      app: simon-guestbook
+      component: redis
   template:
     metadata:
       labels:
-        app: simon-redis
+        app: simon-guestbook
+        component: redis
     spec:
       containers:
-        - name: simon-redis
+        - name: redis
           image: quay.io/kurs/redis:latest
           ports:
             - containerPort: 6379
-       
           resources:
             requests:
               cpu: 100m
@@ -114,7 +116,6 @@ spec:
             limits:
               cpu: 100m
               memory: 512Mi
-          
           env:
             - name: REDIS_PASSWORD
               valueFrom:
@@ -136,9 +137,11 @@ metadata:
 spec:
   type: ClusterIP
   selector:
-    app: simon-redis
+    app: simon-guestbook
+    component: redis
   ports:
     - port: 6379
+      targetPort: 6379
 
 # Golang Backend
 ---
@@ -150,19 +153,20 @@ spec:
   replicas: 2
   selector:
     matchLabels:
-      app: simon-backend
+      app: simon-guestbook
+      component: backend
   template:
     metadata:
       labels:
-        app: simon-backend
+        app: simon-guestbook
+        component: backend
     spec:
       containers:
-        - name: simon-backend
+        - name: backend
           image: ghcr.io/rafaelnacho1/guestbook:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
-         
           resources:
             requests:
               cpu: 100m
@@ -170,7 +174,6 @@ spec:
             limits:
               cpu: 100m
               memory: 512Mi
-            
           env:
             - name: DB_HOST
               valueFrom:
@@ -200,6 +203,8 @@ metadata:
 spec:
   type: ClusterIP
   selector:
-    app: simon-backend
+    app: simon-guestbook
+    component: backend
   ports:
     - port: 8080
+      targetPort: 8080
